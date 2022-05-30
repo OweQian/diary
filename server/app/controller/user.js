@@ -114,10 +114,10 @@ class UserController extends Controller {
       },
     };
   }
-  // 修改用户签名
+  // 修改用户信息
   async editUserInfo() {
     const { ctx, app } = this;
-    const { signature = '' } = ctx.request.body;
+    const { signature = '', avatar = '' } = ctx.request.body;
     try {
       const token = ctx.request.headers.authorization;
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
@@ -132,6 +132,7 @@ class UserController extends Controller {
       await ctx.service.user.editUserInfo({
         ...userInfo,
         signature,
+        avatar,
       });
       ctx.body = {
         code: 200,
@@ -140,6 +141,7 @@ class UserController extends Controller {
           id,
           signature,
           username,
+          avatar,
         },
       };
     } catch (e) {
