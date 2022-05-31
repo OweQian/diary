@@ -244,6 +244,72 @@ class BillController extends Controller {
       };
     }
   }
+  async data() {
+    const { ctx, app } = this;
+    const { date = '' } = ctx.query;
+    try {
+      const token = ctx.request.headers.authorization;
+      const decode = await app.jwt.verify(token, app.config.jwt.secret);
+      if (!decode) return;
+      const {
+        id: user_id,
+      } = decode;
+      // 获取账单表中的账单数据
+      const result = await ctx.service.bill.list(user_id);
+      // 根据时间参数，筛选出当月所有的账单数据
+      const start = moment(date).startOf('month').unix() * 1000;
+      const end = moment(date).endOf('month').unix() * 1000;
+      const _data = result.filter(item => (Number(item.date) > start && Number(item.date) < end));
+      // 总支出
+      const total_expense = _data.reduce((curr, item) => {
+        if (item.pay_type === 1) {
+          curr += Number(item.amount);
+        }
+        return curr;
+      }, 0);
+      // 总收入
+      const total_income = _data.reduce((curr, item) => {
+        if (item.pay_type === 2) {
+          curr += Number(item.amount);
+        }
+        return curr;
+      }, 0);
+      let total_data = _data.reduce((curr, item) => {
+        const index = curr.findIndex(currItem => currItem.type_id === item.type_id);
+        if (index === -1) {
+          curr.push({
+            type_id: item.type_id,
+            type_name: item.type_name,
+            pay_type: item.pay_type,
+            number: Number(item.amount),
+          });
+        }
+        if (index > -1) {
+          curr[index].number += Number(item.amount);
+        }
+        return curr;
+      }, []);
+      total_data = total_data.map(item => {
+        item.number = Number(Number(item.number).toFixed(2));
+        return item;
+      });
+      ctx.body = {
+        code: 200,
+        msg: '请求成功',
+        data: {
+          total_expense: Number(total_expense).toFixed(2),
+          total_income: Number(total_income).toFixed(2),
+          total_data: total_data || [],
+        },
+      };
+    } catch (e) {
+      ctx.body = {
+        code: 500,
+        msg: '系统错误',
+        data: null,
+      };
+    }
+  }
 }
 
 module.exports = BillController;
