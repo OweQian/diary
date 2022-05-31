@@ -12,4 +12,5 @@ module.exports = app => {
   router.post('/api/user/editUserInfo', __jwt, controller.user.editUserInfo); // 编辑用户信息
   router.post('/api/bill/add', __jwt, controller.bill.add); // 添加账单
   router.get('/api/bill/list', __jwt, controller.bill.list); // 获取账单列表
+  router.get('/api/bill/detail', __jwt, controller.bill.detail); // 获取账单详情
 };

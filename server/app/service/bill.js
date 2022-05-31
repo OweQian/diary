@@ -23,6 +23,15 @@ class BillService extends Service {
       return null;
     }
   }
+  async detail(id, user_id) {
+    const { app } = this;
+    try {
+      return await app.mysql.get('bill', { id, user_id });
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
 }
 
 module.exports = BillService;
