@@ -12,7 +12,7 @@ class BillController extends Controller {
       date,
       pay_type,
       remark = '',
-    } = ctx;
+    } = ctx.request.body;
     if (!amount || !type_id || !type_name || !date || !pay_type) {
       ctx.body = {
         code: 400,
@@ -21,7 +21,7 @@ class BillController extends Controller {
       };
     }
     try {
-      const token = ctx.request.header.authorization;
+      const token = ctx.request.headers.authorization;
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
       if (!decode) return;
       await ctx.service.bill.add({
