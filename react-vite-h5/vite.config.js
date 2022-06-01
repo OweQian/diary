@@ -23,5 +23,15 @@ export default defineConfig({
         javascriptEnabled: true
       }
     }
+  },
+  server: {
+    proxy: {
+      '/api': {
+        // 当遇到/api路径时，将其转换成target的值
+        target: 'http://localhost:7002/api/',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api/, '') // 将api重写为空
+      }
+    }
   }
 })
