@@ -1,5 +1,5 @@
-import Index from '../container/Index';
-import About from '../container/About';
+import Index from '../container/Index'
+import About from '../container/About'
 
 const routes = [{
   path: '/',
@@ -9,4 +9,4 @@ const routes = [{
   component: About,
 }]
 
-export default routes;
+export default routes
