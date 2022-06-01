@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import path from 'path';
 import { createStyleImportPlugin } from 'vite-plugin-style-import'
 export default defineConfig({
   plugins: [react(), createStyleImportPlugin({
@@ -32,6 +33,12 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: path => path.replace(/^\/api/, '') // 将api重写为空
       }
+    }
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+      'utils': path.resolve(__dirname, 'src/utils')
     }
   }
 })

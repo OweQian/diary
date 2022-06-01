@@ -3,7 +3,7 @@ import {
   Route,
   Routes
 } from 'react-router-dom';
-import routes from '../src/router'
+import routes from '@/router'
 
 function App() {
   return (
