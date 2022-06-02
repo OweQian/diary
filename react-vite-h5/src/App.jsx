@@ -1,19 +1,31 @@
+import { useState, useEffect } from 'react'
 import {
   BrowserRouter as Router,
   Route,
-  Routes
-} from 'react-router-dom';
+  Routes,
+  useLocation
+} from 'react-router-dom'
 import routes from '@/router'
+import NavBar from '@/components/NavBar'
 
 function App() {
+  const location = useLocation()
+  const { pathname } = location
+  const needNav = ['/', '/data', '/user']
+  const [showNav, setShowNav] = useState(false)
+  useEffect(() => {
+    setShowNav(needNav.includes(pathname))
+  }, [pathname])
+
   return (
-    <Router>
+    <>
       <Routes>
         {
           routes.map(route => <Route exact key={route.path} path={route.path} element={<route.component />}/>)
         }
       </Routes>
-    </Router>
+      <NavBar showNav={showNav} />
+    </>
   )
 }
 
