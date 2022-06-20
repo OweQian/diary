@@ -72,7 +72,6 @@ class BillController extends Controller {
         }
         return moment(Number(item.date)).format('YYYY-MM') === date;
       });
-      console.log(_list);
       // 格式化数据
       const listMap = _list.reduce((curr, item) => {
         const date = moment(Number(item.date)).format('YYYY-MM-DD');
@@ -94,6 +93,7 @@ class BillController extends Controller {
         }
         return curr;
       }, []).sort((a, b) => moment(b.date) - moment(a.date)); // 时间顺序为倒叙
+      console.log(listMap);
       // 分页处理
       const filterListMap = listMap.slice((page - 1) * page_size, page * page_size);
       // 计算总收入和总支出

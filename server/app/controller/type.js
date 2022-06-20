@@ -12,7 +12,7 @@ class TypeController extends Controller {
       const {
         id: user_id,
       } = decode;
-      const list = await ctx.service.bill.list(user_id);
+      const list = await ctx.service.type.list(user_id);
       ctx.body = {
         code: 200,
         msg: '请求成功',

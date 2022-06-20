@@ -44,7 +44,7 @@ const PopupType = forwardRef(({ onSelect }, ref) => {
       onMaskClick={() => setShow(false)}
       direction="bottom"
       destroy={false}
-      mountContainer={() => document.body}
+      mountContainer={false}
     >
       <div className={styles.popupType}>
         <div className={styles.header}>
@@ -58,8 +58,8 @@ const PopupType = forwardRef(({ onSelect }, ref) => {
           <div
             onClick={() => choseType({id: 'all'})}
             className={style({[styles.all]: true, [styles.active]: active === 'all'})}>全部类型</div>
-          <div className={style.title}>支出</div>
-          <div className={style.expenseWrap}>
+          <div className={styles.title}>支出</div>
+          <div className={styles.expenseWrap}>
             {
               expense.map((item, index) => {
                 return (
@@ -73,8 +73,8 @@ const PopupType = forwardRef(({ onSelect }, ref) => {
               })
             }
           </div>
-          <div className={style.title}>收入</div>
-          <div className={style.incomeWrap}>
+          <div className={styles.title}>收入</div>
+          <div className={styles.incomeWrap}>
             {
               income.map((item, index) => {
                 return (

@@ -2,11 +2,13 @@ import { useState, useEffect, useRef } from 'react'
 import { Icon, Pull } from 'zarm'
 import BillItem from '@/components/BillItem'
 import PopupType from "@/components/PopupType"
+import PopupDate from "@/components/PopupDate"
 import dayjs from 'dayjs'
 import { get, REFRESH_STATE, LOAD_STATE } from '@/utils'
 import style from './style.module.less'
 const Home = () => {
   const typeRef = useRef()
+  const monthRef = useRef()
   const [currentSelect, setCurrentSelect] = useState({})
   const [currentTime, setCurrentTime] = useState(dayjs().format('YYYY-MM'))
   const [page, setPage] = useState(1)
@@ -14,6 +16,8 @@ const Home = () => {
   const [totalPage, setTotalPage] = useState(0)
   const [refreshing, setRefreshing] = useState(REFRESH_STATE.normal)
   const [loading, setLoading] = useState(LOAD_STATE.normal)
+  const [totalExpense, setTotalExpense] = useState(0)
+  const [totalIncome, setTotalIncome] = useState(0)
 
   useEffect(() => {
     getBillList()
@@ -25,6 +29,8 @@ const Home = () => {
         const {
           data: {
             list: bill,
+            totalExpense,
+            totalIncome,
             totalPage
           }
         } = res
@@ -33,6 +39,8 @@ const Home = () => {
         } else {
           setList(list.concat(bill))
         }
+        setTotalExpense(totalExpense.toFixed(2))
+        setTotalIncome(totalIncome.toFixed(2))
         setTotalPage(totalPage)
         setRefreshing(REFRESH_STATE.normal)
         setLoading(LOAD_STATE.success)
@@ -60,10 +68,20 @@ const Home = () => {
     typeRef.current && typeRef.current.show()
   }
 
+  const monthToggle = () => {
+    monthRef.current && monthRef.current.show()
+  }
+
   const select = (item) => {
     setRefreshing(REFRESH_STATE.loading)
     setPage(1)
     setCurrentSelect(item)
+  }
+
+  const monthSelect = (item) => {
+    setRefreshing(REFRESH_STATE.loading)
+    setPage(1)
+    setCurrentTime(item)
   }
 
   return (
@@ -71,10 +89,10 @@ const Home = () => {
       <div className={style.header}>
         <div className={style.dataWrap}>
           <span className={style.expense}>
-            总支出：<b>¥ 200</b>
+            总支出：<b>¥ {totalExpense}</b>
           </span>
           <span className={style.income}>
-            总收入：<b>¥ 500</b>
+            总收入：<b>¥ {totalIncome}</b>
           </span>
         </div>
         <div className={style.typeWrap}>
@@ -83,7 +101,7 @@ const Home = () => {
               {currentSelect.name || '全部类型'} <Icon className={style.arrow} type="arrow-bottom"/>
             </span>
           </div>
-          <div className={style.right}>
+          <div className={style.right} onClick={monthToggle}>
             <span className={style.time}>
               2022-06 <Icon className={style.arrow} type="arrow-bottom"/>
             </span>
@@ -113,6 +131,7 @@ const Home = () => {
         }
       </div>
       <PopupType ref={typeRef} onSelect={select} />
+      <PopupDate ref={monthRef} onSelect={monthSelect} />
     </div>
   )
 }
