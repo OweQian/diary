@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Icon, Pull } from 'zarm'
 import BillItem from '@/components/BillItem'
+import PopupType from "@/components/PopupType"
 import dayjs from 'dayjs'
 import { get, REFRESH_STATE, LOAD_STATE } from '@/utils'
 import style from './style.module.less'
-
 const Home = () => {
+  const typeRef = useRef()
+  const [currentSelect, setCurrentSelect] = useState({})
   const [currentTime, setCurrentTime] = useState(dayjs().format('YYYY-MM'))
   const [page, setPage] = useState(1)
   const [list, setList] = useState([])
@@ -15,10 +17,10 @@ const Home = () => {
 
   useEffect(() => {
     getBillList()
-  }, [page])
+  }, [page, currentTime, currentSelect])
 
   const getBillList = () => {
-    get(`/bill/list?page=${page}&page_size=5&date=${currentTime}`).then(
+    get(`/bill/list?page=${page}&page_size=5&date=${currentTime}&type_id=${currentSelect.id || 'all'}`).then(
       res => {
         const {
           data: {
@@ -53,6 +55,17 @@ const Home = () => {
       setPage(page + 1)
     }
   }
+
+  const toggle = () => {
+    typeRef.current && typeRef.current.show()
+  }
+
+  const select = (item) => {
+    setRefreshing(REFRESH_STATE.loading)
+    setPage(1)
+    setCurrentSelect(item)
+  }
+
   return (
     <div className={style.home}>
       <div className={style.header}>
@@ -65,9 +78,9 @@ const Home = () => {
           </span>
         </div>
         <div className={style.typeWrap}>
-          <div className={style.left}>
+          <div className={style.left} onClick={toggle}>
             <span className={style.title}>
-              类型 <Icon className={style.arrow} type="arrow-bottom"/>
+              {currentSelect.name || '全部类型'} <Icon className={style.arrow} type="arrow-bottom"/>
             </span>
           </div>
           <div className={style.right}>
@@ -99,6 +112,7 @@ const Home = () => {
           ) : null
         }
       </div>
+      <PopupType ref={typeRef} onSelect={select} />
     </div>
   )
 }
