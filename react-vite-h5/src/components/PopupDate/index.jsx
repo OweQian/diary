@@ -36,15 +36,12 @@ const PopupDate = forwardRef(({ onSelect, mode = 'date' }, ref) => {
       destroy={false}
       mountContainer={false}
     >
-      <div>
-        <DatePicker
-          visible={show}
-          value={now}
-          mode={mode}
-          onOk={closeMonth}
-          onCancel={() => setShow(false)}
-          />
-      </div>
+      <DatePicker
+        value={now}
+        mode={mode}
+        onOk={closeMonth}
+        onCancel={() => setShow(false)}
+      />
     </Popup>
   )
 })

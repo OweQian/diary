@@ -18,7 +18,7 @@
     "react-captcha-code": "^1.0.7",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.3.0",
-    "zarm": "^2.9.13"
+    "zarm": "^2.8.2"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",

@@ -3,12 +3,16 @@ import { Icon, Pull } from 'zarm'
 import BillItem from '@/components/BillItem'
 import PopupType from "@/components/PopupType"
 import PopupDate from "@/components/PopupDate"
+import PopupAddBill from "@/components/PopupAddBill"
 import dayjs from 'dayjs'
 import { get, REFRESH_STATE, LOAD_STATE } from '@/utils'
 import style from './style.module.less'
+import CustomIcon from '@/components/CustomIcon'
+
 const Home = () => {
   const typeRef = useRef()
   const monthRef = useRef()
+  const addRef = useRef()
   const [currentSelect, setCurrentSelect] = useState({})
   const [currentTime, setCurrentTime] = useState(dayjs().format('YYYY-MM'))
   const [page, setPage] = useState(1)
@@ -72,6 +76,10 @@ const Home = () => {
     monthRef.current && monthRef.current.show()
   }
 
+  const addToggle = () => {
+    addRef.current && addRef.current.show()
+  }
+
   const select = (item) => {
     setRefreshing(REFRESH_STATE.loading)
     setPage(1)
@@ -132,6 +140,8 @@ const Home = () => {
       </div>
       <PopupType ref={typeRef} onSelect={select} />
       <PopupDate ref={monthRef} onSelect={monthSelect} />
+      <PopupAddBill ref={addRef} />
+      <div className={style.add} onClick={addToggle}><CustomIcon type="tianjia" /></div>
     </div>
   )
 }
