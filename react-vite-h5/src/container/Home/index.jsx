@@ -140,7 +140,7 @@ const Home = () => {
       </div>
       <PopupType ref={typeRef} onSelect={select} />
       <PopupDate ref={monthRef} onSelect={monthSelect} />
-      <PopupAddBill ref={addRef} />
+      <PopupAddBill ref={addRef} onReload={refreshData} />
       <div className={style.add} onClick={addToggle}><CustomIcon type="tianjia" /></div>
     </div>
   )

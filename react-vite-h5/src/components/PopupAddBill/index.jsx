@@ -1,9 +1,9 @@
 import { useState, forwardRef, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Popup, Icon, Keyboard } from 'zarm';
+import { Popup, Icon, Keyboard, Input, Toast } from 'zarm';
 import PopupDate from "../PopupDate";
 import CustomIcon from "../CustomIcon";
-import { get, typeMap } from "@/utils";
+import { get, typeMap, post } from "@/utils";
 import dayjs from 'dayjs';
 import style from 'classnames';
 import styles from './style.module.less'
@@ -17,6 +17,8 @@ const PopupAddBill = forwardRef((props, ref) => {
   const [currentType, setCurrentType] = useState({})
   const [expense, setExpense] = useState([])
   const [income, setIncome] = useState([])
+  const [remark, setRemark] = useState('')
+  const [showRemark, setShowRemark] = useState(false)
 
   if (ref) {
     ref.current = {
@@ -62,6 +64,7 @@ const PopupAddBill = forwardRef((props, ref) => {
     }
 
     if (value === 'ok') {
+      addBill()
       return
     }
 
@@ -70,6 +73,31 @@ const PopupAddBill = forwardRef((props, ref) => {
     setAmount(amount + value)
   }
 
+  const addBill = () => {
+    if (!amount) {
+      Toast.show('请输入具体金额')
+      return
+    }
+    const params = {
+      amount: Number(amount).toFixed(2),
+      type_id: currentType.id,
+      type_name: currentType.name,
+      date: dayjs(date).unix() * 1000,
+      pay_type: payType === 'expense' ? 1 : 2,
+      remark: remark || ''
+    }
+
+    post('/bill/add', params).then(res => {
+      setAmount('')
+      setPayType('expense')
+      setDate(new Date())
+      setRemark('')
+      setCurrentType(expense[0])
+      Toast.show('添加成功')
+      setShow(false)
+      props.onReload && props.onReload()
+    })
+  }
   return (
     <Popup
       visible={show}
@@ -105,12 +133,30 @@ const PopupAddBill = forwardRef((props, ref) => {
                     <span className={style({[styles.iconfontWrap]: true, [styles.expense]: payType === 'expense', [styles.income]: payType === 'income', [styles.active]: currentType.id === item.id})}>
                       <CustomIcon className={styles.iconfont} type={typeMap[item.id].icon}/>
                     </span>
-                    <span>{ item.name }</span>
+                    <span>{item.name}</span>
                   </div>
                 )
               })
             }
           </div>
+        </div>
+        <div className={styles.remark}>
+          {
+            showRemark ? (
+              <Input
+                autoHeight
+                showLength
+                maxLength={50}
+                type="text"
+                rows={3}
+                value={remark}
+                placeholder="请输入备注信息"
+                onChange={val => setRemark(val)}
+                onBlur={() => setShowRemark(false)}/>
+            ) : (
+              <span onClick={() => setShowRemark(true)}>{remark || '添加备注'}</span>
+            )
+          }
         </div>
         <Keyboard type="price" onKeyClick={(value) => handleMoney(value)} />
         <PopupDate ref={dateRef} onSelect={selectDate} />

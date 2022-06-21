@@ -2,6 +2,7 @@ import { forwardRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Popup, DatePicker } from 'zarm';
 import dayjs from 'dayjs';
+import styles from "../PopupType/style.module.less";
 
 const PopupDate = forwardRef(({ onSelect, mode = 'date' }, ref) => {
   const [show, setShow] = useState(false)
@@ -36,12 +37,14 @@ const PopupDate = forwardRef(({ onSelect, mode = 'date' }, ref) => {
       destroy={false}
       mountContainer={false}
     >
-      <DatePicker
-        value={now}
-        mode={mode}
-        onOk={closeMonth}
-        onCancel={() => setShow(false)}
-      />
+      <div className={styles.popupDate}>
+        <DatePicker
+          value={now}
+          mode={mode}
+          onOk={closeMonth}
+          onCancel={() => setShow(false)}
+        />
+      </div>
     </Popup>
   )
 })
