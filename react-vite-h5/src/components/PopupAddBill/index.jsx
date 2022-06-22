@@ -8,7 +8,7 @@ import dayjs from 'dayjs';
 import style from 'classnames';
 import styles from './style.module.less'
 
-const PopupAddBill = forwardRef((props, ref) => {
+const PopupAddBill = forwardRef(({ detail = {}, onReload }, ref) => {
   const [show, setShow] = useState(false)
   const [payType, setPayType] = useState('expense')
   const dateRef = useRef()
@@ -19,7 +19,7 @@ const PopupAddBill = forwardRef((props, ref) => {
   const [income, setIncome] = useState([])
   const [remark, setRemark] = useState('')
   const [showRemark, setShowRemark] = useState(false)
-
+  const id = detail && detail.id
   if (ref) {
     ref.current = {
       show: () => {
@@ -31,8 +31,21 @@ const PopupAddBill = forwardRef((props, ref) => {
     }
   }
 
+  useEffect(() =>  {
+    if (id) {
+      setPayType(detail.pay_type === 1 ? 'expense' : 'income')
+      setCurrentType({
+        id: detail.type_id,
+        name: detail.type_name
+      })
+      setRemark(detail.remark)
+      setAmount(detail.amount)
+      setDate(dayjs(Number(detail.date)).$d)
+    }
+  }, [detail])
+
   useEffect(() => {
-    get('type/list').then(res => {
+    get('/type/list').then(res => {
       const {
         data: {
           list,
@@ -42,7 +55,9 @@ const PopupAddBill = forwardRef((props, ref) => {
       const _income = list.filter(item => item.type === 2)
       setExpense(_expense)
       setIncome(_income)
-      setCurrentType(_expense[0])
+      if (!id) {
+        setCurrentType(_expense[0])
+      }
     })
   }, [])
 
@@ -86,18 +101,24 @@ const PopupAddBill = forwardRef((props, ref) => {
       pay_type: payType === 'expense' ? 1 : 2,
       remark: remark || ''
     }
-
-    post('/bill/add', params).then(res => {
-      setAmount('')
-      setPayType('expense')
-      setDate(new Date())
-      setRemark('')
-      setCurrentType(expense[0])
-      Toast.show('添加成功')
-      setShow(false)
-      props.onReload && props.onReload()
-    })
+    if (id) {
+      post('/bill/update').then(res => {
+        Toast.show('修改成功')
+      })
+    } else {
+      post('/bill/add', params).then(res => {
+        setAmount('')
+        setPayType('expense')
+        setDate(new Date())
+        setRemark('')
+        setCurrentType(expense[0])
+        Toast.show('添加成功')
+      })
+    }
+    setShow(false)
+    onReload && onReload()
   }
+
   return (
     <Popup
       visible={show}
@@ -164,5 +185,9 @@ const PopupAddBill = forwardRef((props, ref) => {
     </Popup>
   )
 })
+
+PopupAddBill.propTypes = {
+  onReload: PropTypes.func,
+}
 
 export default PopupAddBill;
